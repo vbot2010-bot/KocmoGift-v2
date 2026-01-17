@@ -2,44 +2,71 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Mini App</title>
+  <title>Gift Battle Mini App</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <!-- Telegram -->
+  <!-- Telegram Mini App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- TON Connect -->
+  <!-- TON Connect UI -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
-  <link rel="stylesheet" href="style.css" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="tabs">
-  <button onclick="showTab('home')">🏠 Главная</button>
-  <button onclick="showTab('profile')">👤 Профиль</button>
-</div>
-
-<div id="home" class="tab active">
-  <h2>Главная</h2>
-  <p>💰 Баланс: <span id="balance">0</span> TON</p>
-  <div class="cases">
-    <p>🎁 Кейсы скоро...</p>
+  <!-- Навигация -->
+  <div class="tabs">
+    <button onclick="showTab('home')">🏠 Главная</button>
+    <button onclick="showTab('profile')">👤 Профиль</button>
   </div>
-</div>
 
-<div id="profile" class="tab">
-  <img id="avatar">
-  <h3 id="username"></h3>
+  <!-- Главная -->
+  <div id="home" class="tab active">
+    <h2>🏠 Главная</h2>
 
-  <button onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
-  <button onclick="sendTon()">💰 Пополнить баланс</button>
+    <div class="card">
+      <p>💰 Баланс</p>
+      <h1><span id="balance">0</span> TON</h1>
+    </div>
 
-  <p id="wallet"></p>
-</div>
+    <div class="card">
+      <p>🎁 Кейсы</p>
+      <p>Скоро будут доступны</p>
+    </div>
+  </div>
 
-<script src="tonconnect.js"></script>
-<script src="main.js"></script>
+  <!-- Профиль -->
+  <div id="profile" class="tab">
+    <h2>👤 Профиль</h2>
+
+    <img id="avatar" src="" alt="avatar">
+
+    <h3 id="username">Загрузка...</h3>
+
+    <div class="card">
+      <button onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
+
+      <button id="disconnect" onclick="disconnectWallet()" style="display:none">
+        ❌ Отключить кошелёк
+      </button>
+
+      <p id="wallet">Кошелёк не подключён</p>
+    </div>
+
+    <div class="card">
+      <button onclick="sendTon()">💰 Пополнить баланс</button>
+      <p style="font-size: 12px; opacity: 0.7">
+        Оплата производится в TON
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="tonconnect.js"></script>
+  <script src="main.js"></script>
+
 </body>
 </html>
