@@ -1,43 +1,58 @@
-// ЖДЁМ, ПОКА СТРАНИЦА ЗАГРУЗИТСЯ
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
   });
 
-  window.tonConnectUI = tonConnectUI; // 👈 ВАЖНО
+  window.tonConnectUI = tonConnectUI;
 
   let walletAddress = null;
 
-  // статус кошелька
-  tonConnectUI.onStatusChange(wallet => {
-    if (wallet) {
-      walletAddress = wallet.account.address;
-
+  function updateUI(address) {
+    if (address) {
       document.getElementById("wallet").innerText =
         "Кошелёк: " +
-        walletAddress.slice(0, 6) +
+        address.slice(0, 6) +
         "..." +
-        walletAddress.slice(-4);
+        address.slice(-4);
 
       document.getElementById("disconnect").style.display = "block";
     } else {
-      walletAddress = null;
       document.getElementById("wallet").innerText = "Кошелёк не подключён";
       document.getElementById("disconnect").style.display = "none";
     }
+  }
+
+  // 🔹 1. Проверяем существующее подключение (КЛЮЧЕВО!)
+  const currentWallet = tonConnectUI.wallet;
+  if (currentWallet) {
+    walletAddress = currentWallet.account.address;
+    updateUI(walletAddress);
+  }
+
+  // 🔹 2. Подписка на изменения
+  tonConnectUI.onStatusChange(wallet => {
+    if (wallet?.account?.address) {
+      walletAddress = wallet.account.address;
+      updateUI(walletAddress);
+    } else {
+      walletAddress = null;
+      updateUI(null);
+    }
   });
 
-  // 👇 ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ
-  window.connectWallet = function () {
+  // 🔹 3. Глобальные функции
+  window.connectWallet = () => {
     tonConnectUI.openModal();
   };
 
-  window.disconnectWallet = function () {
-    tonConnectUI.disconnect();
+  window.disconnectWallet = async () => {
+    await tonConnectUI.disconnect();
+    walletAddress = null;
+    updateUI(null);
   };
 
-  window.sendTon = async function () {
+  window.sendTon = async () => {
     if (!walletAddress) {
       alert("Сначала подключи кошелёк");
       return;
@@ -47,18 +62,18 @@ document.addEventListener("DOMContentLoaded", () => {
       validUntil: Math.floor(Date.now() / 1000) + 300,
       messages: [
         {
-          address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi", // ← твой адрес
-          amount: "1000000000" // 1 TON
+          address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",
+          amount: "1000000000"
         }
       ]
     };
 
     try {
       await tonConnectUI.sendTransaction(transaction);
-      addBalance(1); // визуально
-      alert("Транзакция отправлена");
-    } catch (e) {
-      alert("Транзакция отменена");
+      addBalance(1);
+      alert("TON отправлены");
+    } catch {
+      alert("Отменено");
     }
   };
 
