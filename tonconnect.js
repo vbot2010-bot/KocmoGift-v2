@@ -1,5 +1,5 @@
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: "https://YOUR_DOMAIN/tonconnect-manifest.json"
+  manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
 });
 
 let walletAddress = null;
