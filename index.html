@@ -47,12 +47,8 @@
     <h3 id="username">Загрузка...</h3>
 
     <div class="card">
-      <button onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
-
-      <button id="disconnect" onclick="disconnectWallet()" style="display:none">
-        ❌ Отключить кошелёк
-      </button>
-
+      <button id="connectBtn" onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
+      <button id="disconnect" onclick="disconnectWallet()" style="display:none">❌ Отключить кошелёк</button>
       <p id="wallet">Кошелёк не подключён</p>
     </div>
 
@@ -64,8 +60,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  
+  <!-- Script -->
   <script src="main.js"></script>
 
 </body>
