@@ -47,8 +47,12 @@
     <h3 id="username">Загрузка...</h3>
 
     <div class="card">
-      <button id="connectBtn" onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
-      <button id="disconnect" onclick="disconnectWallet()" style="display:none">❌ Отключить кошелёк</button>
+      <button onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
+
+      <button id="disconnect" onclick="disconnectWallet()" style="display:none">
+        ❌ Отключить кошелёк
+      </button>
+
       <p id="wallet">Кошелёк не подключён</p>
     </div>
 
@@ -60,8 +64,9 @@
     </div>
   </div>
 
-  <!-- Script -->
+  <!-- Scripts -->
   <script src="main.js"></script>
+  <script src="tonconnect.js"></script>
 
 </body>
-</html>
+      </html>
