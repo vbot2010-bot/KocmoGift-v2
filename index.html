@@ -49,11 +49,20 @@
     <div class="card">
       <button onclick="connectWallet()">🔗 Подключить TON кошелёк</button>
 
-<button id="disconnect" onclick="disconnectWallet()" style="display:none">
-  ❌ Отключить кошелёк
-</button>
+      <button id="disconnect" onclick="disconnectWallet()" style="display:none">
+        ❌ Отключить кошелёк
+      </button>
 
-<button onclick="sendTon()">💰 Пополнить баланс</button>
+      <p id="wallet">Кошелёк не подключён</p>
+    </div>
+
+    <div class="card">
+      <button onclick="sendTon()">💰 Пополнить баланс</button>
+      <p style="font-size: 12px; opacity: 0.7">
+        Оплата производится в TON
+      </p>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="tonconnect.js"></script>
