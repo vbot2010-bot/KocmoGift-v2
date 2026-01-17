@@ -1,7 +1,6 @@
-// ЖДЁМ, ПОКА СТРАНИЦА ЗАГРУЗИТСЯ
 document.addEventListener("DOMContentLoaded", () => {
 
-  const MY_WALLET = "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi"; // <- Вставь сюда свой адрес
+  const MY_WALLET = "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi"; // <- Вставь сюда свой TON кошелёк
 
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://kocmogift-v22.vercel.app/tonconnect-manifest.json"
@@ -80,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.balance) {
         alert("Баланс обновлён: " + data.balance);
+        document.getElementById("balance").innerText = data.balance;
       } else {
         alert("Ошибка: " + (data.error || "Неизвестная ошибка"));
       }
