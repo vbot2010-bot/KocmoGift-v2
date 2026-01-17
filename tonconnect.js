@@ -28,7 +28,7 @@ async function sendTon() {
     validUntil: Math.floor(Date.now() / 1000) + 300,
     messages: [
       {
-        address: "ТВОЙ_TON_КОШЕЛЕК", // ← сюда твой адрес
+        address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi", // ← сюда твой адрес
         amount: "1000000000" // 1 TON (в nanoTON)
       }
     ]
