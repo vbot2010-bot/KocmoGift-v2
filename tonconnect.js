@@ -1,89 +1,79 @@
-          document.addEventListener("DOMContentLoaded", async () => {
+                // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
+let tonConnectUI = null;
+let walletAddress = null;
 
-  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+// ===== UI =====
+function showConnected(address) {
+  document.getElementById("wallet").innerText =
+    "Кошелёк: " + address.slice(0, 6) + "..." + address.slice(-4);
+  document.getElementById("disconnect").style.display = "block";
+}
+
+function showDisconnected() {
+  document.getElementById("wallet").innerText = "Кошелёк не подключён";
+  document.getElementById("disconnect").style.display = "none";
+}
+
+// ===== СИНХРОНИЗАЦИЯ =====
+function syncWalletState() {
+  const wallet = tonConnectUI.wallet;
+  if (wallet && wallet.account?.address) {
+    walletAddress = wallet.account.address;
+    showConnected(walletAddress);
+  } else {
+    walletAddress = null;
+    showDisconnected();
+  }
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+document.addEventListener("DOMContentLoaded", () => {
+
+  tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
   });
 
-  window.tonConnectUI = tonConnectUI;
+  // при загрузке
+  setTimeout(syncWalletState, 300);
 
-  let walletAddress = null;
-
-  const walletText = document.getElementById("wallet");
-  const disconnectBtn = document.getElementById("disconnect");
-
-  function showConnected(address) {
-    walletText.innerText =
-      "Кошелёк: " +
-      address.slice(0, 6) +
-      "..." +
-      address.slice(-4);
-
-    disconnectBtn.style.display = "block";
-  }
-
-  function showDisconnected() {
-    walletText.innerText = "Кошелёк не подключён";
-    disconnectBtn.style.display = "none";
-  }
-
-  // 🔴 КЛЮЧЕВОЕ МЕСТО
-  function syncWalletState() {
-    const wallet = tonConnectUI.wallet;
-    if (wallet && wallet.account && wallet.account.address) {
-      walletAddress = wallet.account.address;
-      showConnected(walletAddress);
-    } else {
-      walletAddress = null;
-      showDisconnected();
-    }
-  }
-
-  // 1️⃣ синхронизация при загрузке
-  syncWalletState();
-
-  // 2️⃣ синхронизация при любом изменении
+  // при изменениях
   tonConnectUI.onStatusChange(() => {
-    // ⏱ небольшая задержка — КЛЮЧ
     setTimeout(syncWalletState, 300);
   });
-
-  // 3️⃣ глобальные функции
-  window.connectWallet = () => {
-    tonConnectUI.openModal();
-
-    // 🔁 повторная проверка после выбора кошелька
-    setTimeout(syncWalletState, 1000);
-  };
-
-  window.disconnectWallet = async () => {
-    await tonConnectUI.disconnect();
-    walletAddress = null;
-    showDisconnected();
-  };
-
-  window.sendTon = async () => {
-    if (!walletAddress) {
-      alert("Сначала подключи кошелёк");
-      return;
-    }
-
-    const transaction = {
-      validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [
-        {
-          address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",
-          amount: "1000000000"
-        }
-      ]
-    };
-
-    try {
-      await tonConnectUI.sendTransaction(transaction);
-      addBalance(1);
-      alert("TON отправлены");
-    } catch {
-      alert("Отменено");
-    }
-  };
-
 });
+
+// ====== ГЛОБАЛЬНЫЕ ФУНКЦИИ (КЛЮЧ!) ======
+window.connectWallet = function () {
+  tonConnectUI.openModal();
+};
+
+window.disconnectWallet = async function () {
+  await tonConnectUI.disconnect();
+  walletAddress = null;
+  showDisconnected();
+};
+
+window.sendTon = async function () {
+  if (!walletAddress) {
+    alert("Сначала подключи кошелёк");
+    return;
+  }
+
+  const transaction = {
+    validUntil: Math.floor(Date.now() / 1000) + 300,
+    messages: [
+      {
+        address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",
+        amount: "1000000000" // 1 TON
+      }
+    ]
+  };
+
+  try {
+    await tonConnectUI.sendTransaction(transaction);
+    addBalance(1);
+    alert("TON отправлены");
+  } catch {
+    alert("Транзакция отменена");
+  }
+};
