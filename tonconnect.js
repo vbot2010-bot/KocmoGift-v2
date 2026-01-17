@@ -1,41 +1,35 @@
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
+  manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json",
+  buttonRootId: "ton-connect"
 });
 
 let walletAddress = null;
 
-// подключение кошелька
-async function connectWallet() {
-  await tonConnectUI.connectWallet();
-}
-
+// подписка на статус
 tonConnectUI.onStatusChange(wallet => {
   if (wallet) {
     walletAddress = wallet.account.address;
+
     document.getElementById("wallet").innerText =
-      "Кошелёк: " + walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4);
+      "Кошелёк: " +
+      walletAddress.slice(0, 6) +
+      "..." +
+      walletAddress.slice(-4);
+
+    document.getElementById("disconnect").style.display = "block";
+  } else {
+    walletAddress = null;
+    document.getElementById("wallet").innerText = "Кошелёк не подключён";
+    document.getElementById("disconnect").style.display = "none";
   }
 });
 
-// отправка TON (РЕАЛЬНАЯ)
-async function sendTon() {
-  if (!walletAddress) {
-    alert("Сначала подключи кошелёк");
-    return;
-  }
+// подключение
+function connectWallet() {
+  tonConnectUI.openModal();
+}
 
-  const transaction = {
-    validUntil: Math.floor(Date.now() / 1000) + 300,
-    messages: [
-      {
-        address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi", // ← сюда твой адрес
-        amount: "1000000000" // 1 TON (в nanoTON)
-      }
-    ]
-  };
-
-  await tonConnectUI.sendTransaction(transaction);
-
-  // ⚠️ ПОКА ЧТО: начисляем визуально
-  addBalance(1);
+// отключение
+function disconnectWallet() {
+  tonConnectUI.disconnect();
 }
