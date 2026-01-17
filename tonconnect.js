@@ -1,14 +1,15 @@
-      // ЖДЁМ, ПОКА СТРАНИЦА ЗАГРУЗИТСЯ
+// ЖДЁМ, ПОКА СТРАНИЦА ЗАГРУЗИТСЯ
 document.addEventListener("DOMContentLoaded", () => {
 
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
 });
 
-window.tonConnectUI = tonConnectUI;
+window.tonConnectUI = tonConnectUI; // 👈 ВАЖНО
 
 let walletAddress = null;
 
+// статус кошелька
 tonConnectUI.onStatusChange(wallet => {
 if (wallet) {
 walletAddress = wallet.account.address;
@@ -28,6 +29,7 @@ document.getElementById("wallet").innerText =
 
 });
 
+// 👇 ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ
 window.connectWallet = function () {
 tonConnectUI.openModal();
 };
@@ -36,44 +38,30 @@ window.disconnectWallet = function () {
 tonConnectUI.disconnect();
 };
 
-// ⬇⬇⬇ ВОТ СЮДА ⬇⬇⬇
 window.sendTon = async function () {
-
-if (!walletAddress) {  
-  alert("Сначала подключи кошелёк");  
-  return;  
-}  
-
-let amountTon = prompt("Введите сумму пополнения (минимум 0.1 TON):");  
-if (!amountTon) return;  
-
-amountTon = parseFloat(amountTon);  
-
-if (isNaN(amountTon) || amountTon < 0.1) {  
-  alert("Минимум 0.1 TON");  
-  return;  
-}  
-
-const amountNano = Math.floor(amountTon * 1e9).toString();  
+if (!walletAddress) {
+alert("Сначала подключи кошелёк");
+return;
+}
 
 const transaction = {  
   validUntil: Math.floor(Date.now() / 1000) + 300,  
   messages: [  
     {  
-      address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",  
-      amount: amountNano  
+      address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi", // ← твой адрес  
+      amount: "1000000000" // 1 TON  
     }  
   ]  
 };  
 
 try {  
   await tonConnectUI.sendTransaction(transaction);  
-  alert("Транзакция отправлена. Ожидаем подтверждение…");  
+  addBalance(1); // визуально  
+  alert("Транзакция отправлена");  
 } catch (e) {  
-  alert("Платёж отменён");  
+  alert("Транзакция отменена");  
 }
 
 };
 
-});
-Вот этот код работал в нем подключение кошелька и пополнение баланса идёт
+}); 
