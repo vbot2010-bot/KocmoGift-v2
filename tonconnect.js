@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Telegram WebApp
+  const tg = window.Telegram.WebApp;
+  tg.expand(); // Разворачиваем окно
+
+  // TonConnect
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://kocmogift-v22.vercel.app/tonconnect-manifest.json"
   });
@@ -8,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let walletAddress = null;
 
-  tonConnectUI.onStatusChange(wallet => {
+  tonConnectUI.onStatusChange((wallet) => {
     if (wallet) {
       walletAddress = wallet.account.address;
 
@@ -19,21 +24,28 @@ document.addEventListener("DOMContentLoaded", () => {
         walletAddress.slice(-4);
 
       document.getElementById("disconnect").style.display = "block";
+      document.getElementById("connect").style.display = "none";
+      document.getElementById("sendTon").style.display = "block";
     } else {
       walletAddress = null;
       document.getElementById("wallet").innerText = "Кошелёк не подключён";
       document.getElementById("disconnect").style.display = "none";
+      document.getElementById("connect").style.display = "block";
+      document.getElementById("sendTon").style.display = "none";
     }
   });
 
+  // Подключить кошелек
   window.connectWallet = function () {
     tonConnectUI.openModal();
   };
 
+  // Отключить кошелек
   window.disconnectWallet = function () {
     tonConnectUI.disconnect();
   };
 
+  // Пополнение баланса (отправка TON)
   window.sendTon = async function () {
     if (!walletAddress) {
       alert("Сначала подключи кошелёк");
@@ -52,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await tonConnectUI.sendTransaction(transaction);
-      addBalance(1);
       alert("Транзакция отправлена");
     } catch (e) {
       alert("Транзакция отменена");
