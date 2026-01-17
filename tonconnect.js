@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+          document.addEventListener("DOMContentLoaded", async () => {
 
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
@@ -8,48 +8,57 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let walletAddress = null;
 
-  function updateUI(address) {
-    if (address) {
-      document.getElementById("wallet").innerText =
-        "Кошелёк: " +
-        address.slice(0, 6) +
-        "..." +
-        address.slice(-4);
+  const walletText = document.getElementById("wallet");
+  const disconnectBtn = document.getElementById("disconnect");
 
-      document.getElementById("disconnect").style.display = "block";
-    } else {
-      document.getElementById("wallet").innerText = "Кошелёк не подключён";
-      document.getElementById("disconnect").style.display = "none";
-    }
+  function showConnected(address) {
+    walletText.innerText =
+      "Кошелёк: " +
+      address.slice(0, 6) +
+      "..." +
+      address.slice(-4);
+
+    disconnectBtn.style.display = "block";
   }
 
-  // 🔹 1. Проверяем существующее подключение (КЛЮЧЕВО!)
-  const currentWallet = tonConnectUI.wallet;
-  if (currentWallet) {
-    walletAddress = currentWallet.account.address;
-    updateUI(walletAddress);
+  function showDisconnected() {
+    walletText.innerText = "Кошелёк не подключён";
+    disconnectBtn.style.display = "none";
   }
 
-  // 🔹 2. Подписка на изменения
-  tonConnectUI.onStatusChange(wallet => {
-    if (wallet?.account?.address) {
+  // 🔴 КЛЮЧЕВОЕ МЕСТО
+  function syncWalletState() {
+    const wallet = tonConnectUI.wallet;
+    if (wallet && wallet.account && wallet.account.address) {
       walletAddress = wallet.account.address;
-      updateUI(walletAddress);
+      showConnected(walletAddress);
     } else {
       walletAddress = null;
-      updateUI(null);
+      showDisconnected();
     }
+  }
+
+  // 1️⃣ синхронизация при загрузке
+  syncWalletState();
+
+  // 2️⃣ синхронизация при любом изменении
+  tonConnectUI.onStatusChange(() => {
+    // ⏱ небольшая задержка — КЛЮЧ
+    setTimeout(syncWalletState, 300);
   });
 
-  // 🔹 3. Глобальные функции
+  // 3️⃣ глобальные функции
   window.connectWallet = () => {
     tonConnectUI.openModal();
+
+    // 🔁 повторная проверка после выбора кошелька
+    setTimeout(syncWalletState, 1000);
   };
 
   window.disconnectWallet = async () => {
     await tonConnectUI.disconnect();
     walletAddress = null;
-    updateUI(null);
+    showDisconnected();
   };
 
   window.sendTon = async () => {
