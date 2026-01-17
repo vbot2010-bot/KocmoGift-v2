@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const txHash = result.transactionId;
 
     // Ждём подтверждение и начисляем баланс через наш API
-    const response = await fetch("https://ТВОЙ_ДОМЕН.vercel.app/api/check-payment", {
+    const response = await fetch("https://kocmogift-v22.vercel.app//api/check-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
