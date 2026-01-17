@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
+    manifestUrl: "https://kocmogift-v22.vercel.app/tonconnect-manifest.json"
   });
 
   window.tonConnectUI = tonConnectUI;
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const txHash = result.transactionId;
 
     // Ждём подтверждение и начисляем баланс через наш API
-    const response = await fetch("https://kocmogift-v22.vercel.app//api/check-payment", {
+    const response = await fetch("https://kocmogift-v22.vercel.app/api/check-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
