@@ -1,12 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+     document.addEventListener("DOMContentLoaded", () => {
 
   // Telegram WebApp
   const tg = window.Telegram.WebApp;
-  tg.expand(); // Разворачиваем окно
+  tg.expand();
 
-  // TonConnect
+  // TonConnect UI
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: "https://kocmogift-v22.vercel.app/tonconnect-manifest.json"
+    manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
   });
 
   window.tonConnectUI = tonConnectUI;
@@ -24,20 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
         walletAddress.slice(-4);
 
       document.getElementById("disconnect").style.display = "block";
-      document.getElementById("connect").style.display = "none";
-      document.getElementById("sendTon").style.display = "block";
     } else {
       walletAddress = null;
       document.getElementById("wallet").innerText = "Кошелёк не подключён";
       document.getElementById("disconnect").style.display = "none";
-      document.getElementById("connect").style.display = "block";
-      document.getElementById("sendTon").style.display = "none";
     }
   });
 
   // Подключить кошелек
   window.connectWallet = function () {
-    tonConnectUI.openModal();
+    tonConnectUI.openModal(); // TonConnect сам предложит Tonkeeper или Telegram Wallet
   };
 
   // Отключить кошелек
@@ -45,19 +41,30 @@ document.addEventListener("DOMContentLoaded", () => {
     tonConnectUI.disconnect();
   };
 
-  // Пополнение баланса (отправка TON)
+  // Пополнение баланса
   window.sendTon = async function () {
     if (!walletAddress) {
       alert("Сначала подключи кошелёк");
       return;
     }
 
+    // Получаем сумму из input
+    const amount = parseFloat(document.getElementById("amountInput").value);
+
+    if (!amount || amount < 0.1) {
+      alert("Введите сумму минимум 0.1 TON");
+      return;
+    }
+
+    // Переводим TON в nanotons (1 TON = 10^9 nanotons)
+    const nanotons = Math.floor(amount * 1_000_000_000);
+
     const transaction = {
       validUntil: Math.floor(Date.now() / 1000) + 300,
       messages: [
         {
           address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",
-          amount: "1000000000"
+          amount: nanotons.toString()
         }
       ]
     };
@@ -70,4 +77,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-});
+}); 
