@@ -1,29 +1,53 @@
 const tg = window.Telegram.WebApp;
-tg.ready();
 tg.expand();
 
 const user = tg.initDataUnsafe.user;
 
-// вкладки
-function showTab(tab) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
+document.getElementById("username").innerText = user.username;
+document.getElementById("avatar").src = user.photo_url;
+document.getElementById("profileAvatar").src = user.photo_url;
+
+/* Навигация */
+btnHome.onclick = () => switchPage("home");
+btnProfile.onclick = () => switchPage("profile");
+
+function switchPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-// профиль
-document.getElementById("username").innerText =
-  user.username || user.first_name;
+/* TON CONNECT */
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://kocmogift-v22.vercel.app//tonconnect-manifest.json"
+});
 
-document.getElementById("avatar").src =
-  user.photo_url || "https://via.placeholder.com/90";
+connectWallet.onclick = async () => {
+  await tonConnectUI.connectWallet();
+};
 
-// виртуальный баланс (пока local)
-let balance = localStorage.getItem("balance") || 0;
-document.getElementById("balance").innerText = balance;
+tonConnectUI.onStatusChange(wallet => {
+  if (wallet) {
+    connectWallet.style.display = "none";
+    disconnectWallet.style.display = "block";
+  }
+});
 
-// функция начисления (после TON)
-function addBalance(amount) {
-  balance = parseFloat(balance) + amount;
-  localStorage.setItem("balance", balance);
-  document.getElementById("balance").innerText = balance;
-}
+disconnectWallet.onclick = async () => {
+  await tonConnectUI.disconnect();
+};
+
+/* Пополнение */
+deposit.onclick = () => modal.style.display = "block";
+
+pay.onclick = async () => {
+  const amount = document.getElementById("amount").value;
+  if (amount < 0.1) return alert("Минимум 0.1 TON");
+
+  await tonConnectUI.sendTransaction({
+    validUntil: Math.floor(Date.now() / 1000) + 600,
+    messages: [{
+      address: "UQAFXBXzBzau6ZCWzruiVrlTg3HAc8MF6gKIntqTLDifuWOi",
+      amount: (amount * 1e9).toString()
+    }]
+  });
+};
