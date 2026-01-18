@@ -2,16 +2,21 @@ export const config = {
   runtime: "nodejs"
 };
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   try {
     res.status(200).json({
       ok: true,
       message: "API WORKS",
-      env: !!process.env.TONAPI_KEY
+      env: {
+        TONAPI_KEY: !!process.env.TONAPI_KEY,
+        MY_WALLET: !!process.env.MY_WALLET
+      }
     });
   } catch (e) {
     res.status(500).json({
-      error: e.message
+      ok: false,
+      error: e.message,
+      stack: e.stack
     });
   }
 }
