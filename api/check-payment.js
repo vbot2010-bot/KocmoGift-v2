@@ -1,9 +1,10 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
-    const { address } = req.query;
+    const address = req.query.address;
 
     if (!address) {
-      return res.status(400).json({ error: "No address provided" });
+      res.status(400).json({ error: "No address provided" });
+      return;
     }
 
     const response = await fetch(
@@ -15,18 +16,19 @@ export default async function handler(req, res) {
       }
     );
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: "TONAPI request failed"
-      });
-    }
+    const text = await response.text();
 
-    const data = await response.json();
-    return res.status(200).json(data);
+    res.status(200).json({
+      ok: true,
+      tonapi_status: response.status,
+      data: text
+    });
 
   } catch (err) {
-    return res.status(500).json({
-      error: err.message
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+      stack: err.stack
     });
   }
-}
+};
