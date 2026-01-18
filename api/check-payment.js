@@ -1,14 +1,17 @@
+import fetch from "node-fetch";
+
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(200).json({ ok: true });
-  }
+  const { address } = req.query;
 
-  const { userId, txHash, amount } = req.body;
+  const r = await fetch(
+    `https://tonapi.io/v2/accounts/${address}/transactions`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.TONAPI_KEY}`
+      }
+    }
+  );
 
-  if (!userId || !txHash || !amount) {
-    return res.status(400).json({ error: "Missing params" });
-  }
-
-  // Временная логика: просто возвращаем баланс равный сумме
-  return res.status(200).json({ balance: amount });
+  const data = await r.json();
+  res.json(data);
 }
